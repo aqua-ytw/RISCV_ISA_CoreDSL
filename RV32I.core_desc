@@ -5,6 +5,17 @@ InstructionSet RV32I extends RISCVBase {
         XLEN = 32;
     }
 
+
+    functions {
+        void always_block(){
+            PC += 4;
+        }
+    }
+
+    always {
+        implicit_increment { PC += 4; }
+    }
+
     instructions {
         LUI {
             encoding: imm[31:12] :: rd[4:0] :: 7'b0110111;
@@ -473,3 +484,5 @@ InstructionSet RVDebug extends RISCVBase {
         }
     }
 }
+
+
