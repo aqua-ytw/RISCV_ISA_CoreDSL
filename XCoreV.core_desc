@@ -484,10 +484,32 @@ InstructionSet XCoreVAlu extends RISCVBase {
     }
 }
 
-InstructionSet XCoreVHwlp extends RISCVBase {
-    instructions {
-
+InstructionSet XCoreVHwlp extends RV32I {
+  architectural_state {
+    unsigned<32> &lpstart_0 = CSR[0xCC0];
+    unsigned<32> &lpend_0   = CSR[0xCC1];
+    unsigned<32> &lpcount_0 = CSR[0xCC2];
+  }
+  
+  always {
+    zol_0 {
+      if (PC == lpend_0 && lpcount_0 != 0) {
+        PC = lpstart_0;
+        lpcount_0 -= 1;
+      }
     }
+  }
+  
+  instructions {
+    setup_zol_0 {
+      encoding: uimm[11:0] :: rs1[4:0] :: 3'b100 :: 4'b0111 :: 1'b0 :: 7'b0101011;
+      behavior: {
+        lpstart_0 = (unsigned<32>) (PC + 4);
+        lpend_0   = (unsigned<32>) (PC + (uimm << 2));
+        lpcount_0 = X[rs1];
+      }
+    }
+  }
 }
 
 InstructionSet XCoreVBitmanip extends RISCVBase {
