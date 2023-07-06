@@ -492,7 +492,7 @@ InstructionSet XCoreVHwlp extends RV32I {
   }
   
   always {
-    zol_0 {
+    ZOL_0 {
       if (PC == lpend_0 && lpcount_0 != 0) {
         PC = lpstart_0;
         lpcount_0 -= 1;
@@ -501,11 +501,63 @@ InstructionSet XCoreVHwlp extends RV32I {
   }
   
   instructions {
-    setup_zol_0 {
-      encoding: uimm[11:0] :: rs1[4:0] :: 3'b100 :: 4'b0111 :: 1'b0 :: 7'b0101011;
-      behavior: {
+	CV_STARTI_ZOL_0{
+	  encoding: uimmL[11:0] :: rs1[4:0] :: 3'b100 :: 4'b0000 :: 1'b0 :: 7'b0101011;
+      assembly: "{0}, {uimmL}";
+	  behavior: {
+        lpstart_0 = (unsigned<32>) (PC + (uimmL << 2));
+      }
+	}
+	CV_START_ZOL_0{
+	  encoding: 12'b000000000000 :: rs1[4:0] :: 3'b100 :: 4'b0001 :: 1'b0 :: 7'b0101011;
+      assembly: "{0}, {name(rs1)}";
+	  behavior: {
+        lpstart_0 = X[rs1];
+      }
+	}
+	CV_ENDI_ZOL_0{
+	  encoding: uimmL[11:0] :: rs1[4:0] :: 3'b100 :: 4'b0010 :: 1'b0 :: 7'b0101011;
+      assembly: "{0}, {name(rs1)}";
+	  behavior: {
+        lpend_0 = (unsigned<32>) (PC + (uimmL << 2));
+      }
+	}
+    CV_END_ZOL_0{
+	  encoding: 12'b000000000000 :: rs1[4:0] :: 3'b100 :: 4'b0011 :: 1'b0 :: 7'b0101011;
+      assembly: "{0}, {name(rs1)}";
+	  behavior: {
+        lpend_0 = X[rs1];
+      }
+	}
+	CV_COUNTI_ZOL_0{
+	  encoding: uimmL[11:0] :: rs1[4:0] :: 3'b100 :: 4'b0100 :: 1'b0 :: 7'b0101011;
+      assembly: "{0}, {name(rs1)}";
+	  behavior: {
+        lpcount_0 = (unsigned<32>) uimmL;
+      }
+	}
+	CV_COUNT_ZOL_0{
+	  encoding: 12'b000000000000 :: rs1[4:0] :: 3'b100 :: 4'b0101 :: 1'b0 :: 7'b0101011;
+      assembly: "{0}, {name(rs1)}";
+	  behavior: {
+        lpcount_0 = X[rs1];
+      }
+	}
+    CV_SETUPI_ZOL_0 {
+      encoding: uimmL[11:0] :: uimmS[4:0] :: 3'b100 :: 4'b0110 :: 1'b0 :: 7'b0101011;
+	  assembly: "{0}, {uimmL}, {uimmS}";
+	  behavior: {
         lpstart_0 = (unsigned<32>) (PC + 4);
-        lpend_0   = (unsigned<32>) (PC + (uimm << 2));
+        lpend_0   = (unsigned<32>) (PC + (uimmS << 2));
+        lpcount_0 = (unsigned<32>) uimmL;
+      }
+    }
+    CV_SETUP_ZOL_0 {
+      encoding: uimmL[11:0] :: rs1[4:0] :: 3'b100 :: 4'b0111 :: 1'b0 :: 7'b0101011;
+	  assembly: "{0}, {name(rs1)}, {uimmL}";
+	  behavior: {
+        lpstart_0 = (unsigned<32>) (PC + 4);
+        lpend_0   = (unsigned<32>) (PC + (uimmL << 2));
         lpcount_0 = X[rs1];
       }
     }
