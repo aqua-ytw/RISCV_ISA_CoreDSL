@@ -497,13 +497,13 @@ InstructionSet XCoreVHwlp extends RV32I {
 
   always {
     ZOL_0 {
-      if (PC == lpend_0 && lpcount_0 != 0) {
+      if (PC == lpend_0 && lpcount_0 != 1) {
         PC = lpstart_0;
         lpcount_0 -= 1;
       }
     }
 	ZOL_1 {
-      if (PC == lpend_1 && lpcount_1 != 0) {
+      if (PC == lpend_1 && lpcount_1 != 1) {
         PC = lpstart_1;
         lpcount_1 -= 1;
       }
