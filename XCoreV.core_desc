@@ -492,6 +492,7 @@ InstructionSet XCoreVHwlp extends RV32I {
 	unsigned<32> &lpstart_1 = CSR[0xCC4];
     unsigned<32> &lpend_1   = CSR[0xCC5];
     unsigned<32> &lpcount_1 = CSR[0xCC6];
+	unsigned int HWLP_INSTR_ALIGNMENT = 2;
   }
   
 
@@ -515,11 +516,22 @@ InstructionSet XCoreVHwlp extends RV32I {
 	  encoding: uimmL[11:0] :: rs1[4:0] :: 3'b100 :: 4'b0000 :: L[0:0] :: 7'b0101011;
       assembly: "{L}, {uimmL}";
 	  behavior: {
+		
 		if (L == 0) {
-			lpstart_0 = (unsigned<32>) (PC + (uimmL << 2));
+			if (lpstart_0 % HWLP_INSTR_ALIGNMENT) {
+				raise (0,0);
+			}
+			else {
+				lpstart_0 = (unsigned<32>) (PC + (uimmL << 2));
+			}
 		}
 		else { 
-			lpstart_1 = (unsigned<32>) (PC + (uimmL << 2));
+			if (lpstart_1 % HWLP_INSTR_ALIGNMENT) {
+				raise (0,0);
+			}
+			else {
+				lpstart_1 = (unsigned<32>) (PC + (uimmL << 2));
+			}
 		}
 	  }
 	}
@@ -528,10 +540,20 @@ InstructionSet XCoreVHwlp extends RV32I {
       assembly: "{L}, {name(rs1)}";
 	  behavior: {
 		if (L == 0) {
-        	lpstart_0 = X[rs1];
+			if (lpstart_0 % HWLP_INSTR_ALIGNMENT) {
+				raise (0,0);
+			}
+			else {
+        		lpstart_0 = X[rs1];
+			}
 		}
 		else{
-			lpstart_1 = X[rs1];
+			if (lpstart_1 % HWLP_INSTR_ALIGNMENT) {
+				raise (0,0);
+			}
+			else {
+				lpstart_1 = X[rs1];
+			}
 		}
       }
 	}
@@ -540,10 +562,20 @@ InstructionSet XCoreVHwlp extends RV32I {
       assembly: "{L}, {name(rs1)}";
 	  behavior: {
 		if (L == 0) {
-        	lpend_0 = (unsigned<32>) (PC + (uimmL << 2));
+			if (lpend_0 % HWLP_INSTR_ALIGNMENT){
+				raise(0,0);
+			}
+			else{
+				lpend_0 = (unsigned<32>) (PC + (uimmL << 2));
+			}
 		}
 		else{
+			if (lpend_1 % HWLP_INSTR_ALIGNMENT){
+				raise(0,0);
+			}
+			else{
 			lpend_1 = (unsigned<32>) (PC + (uimmL << 2));
+			}
 		}
       }
 	}
@@ -552,10 +584,20 @@ InstructionSet XCoreVHwlp extends RV32I {
       assembly: "{L}, {name(rs1)}";
 	  behavior: {
 		if (L == 0) {
-        	lpend_0 = X[rs1];
+			if (lpend_0 % HWLP_INSTR_ALIGNMENT){
+				raise (0,0);
+			}
+			else{
+				lpend_0 = X[rs1];
+			}
 		}
 		else{
-			lpend_1 = X[rs1];
+			if (lpend_1 % HWLP_INSTR_ALIGNMENT){
+				raise(0,0);
+			}
+			else{
+				lpend_1 = X[rs1];
+			}
 		}
       }
 	}
@@ -588,14 +630,41 @@ InstructionSet XCoreVHwlp extends RV32I {
 	  assembly: "{L}, {uimmL}, {uimmS}";
 	  behavior: {
 		if (L == 0) {
-			lpstart_0 = (unsigned<32>) (PC + 4);
-			lpend_0   = (unsigned<32>) (PC + (uimmS << 2));
+			if (lpstart_0 % HWLP_INSTR_ALIGNMENT){
+				raise(0,0);
+			}
+			else{
+				lpstart_0 = (unsigned<32>) (PC + 4);
+			}
+
+			if (lpend_0 % HWLP_INSTR_ALIGNMENT){
+				raise(0,0);
+			}
+			else {
+				lpend_0   = (unsigned<32>) (PC + (uimmS << 2));
+			}
+			
 			lpcount_0 = (unsigned<32>) uimmL;
 		}
 		else{
-			lpstart_1 = (unsigned<32>) (PC + 4);
-			lpend_1   = (unsigned<32>) (PC + (uimmS << 2));
+			if (lpstart_1 % HWLP_INSTR_ALIGNMENT){
+				raise(0,0);
+			}
+			else{
+				lpstart_1 = (unsigned<32>) (PC + 4);
+			}
+
+			if (lpend_1 % HWLP_INSTR_ALIGNMENT){
+				raise(0,0);
+			}
+			else{
+				lpend_1   = (unsigned<32>) (PC + (uimmS << 2));
+			}
+			
 			lpcount_1 = (unsigned<32>) uimmL;			
+		}
+		if (lpend_1 < lpend_0 + 8){
+			raise(0,2);
 		}
       }
     }
@@ -604,14 +673,39 @@ InstructionSet XCoreVHwlp extends RV32I {
 	  assembly: "{L}, {name(rs1)}, {uimmL}";
 	  behavior: {
 		if (L == 0) {
-			lpstart_0 = (unsigned<32>) (PC + 4);
-			lpend_0   = (unsigned<32>) (PC + (uimmL << 2));
+			if (lpstart_0 % HWLP_INSTR_ALIGNMENT){
+				raise(0,0);
+			}
+			else{
+				lpstart_0 = (unsigned<32>) (PC + 4);
+			}
+			
+			if (lpend_0 % HWLP_INSTR_ALIGNMENT){
+				raise(0,0);
+			}
+			else{
+				lpend_0   = (unsigned<32>) (PC + (uimmL << 2));
+			}
 			lpcount_0 = X[rs1];
 		}
 		else{
-			lpstart_1 = (unsigned<32>) (PC + 4);
-			lpend_1   = (unsigned<32>) (PC + (uimmL << 2));
+			if (lpstart_1 % HWLP_INSTR_ALIGNMENT){
+				raise(0,0);
+			}
+			else{
+				lpstart_1 = (unsigned<32>) (PC + 4);
+			}
+			
+			if(lpend_1 % HWLP_INSTR_ALIGNMENT){
+				raise(0,0);
+			}
+			else{
+				lpend_1   = (unsigned<32>) (PC + (uimmL << 2));
+			}
 			lpcount_1 = X[rs1];			
+		}
+		if (lpend_1 < lpend_0 + 8){
+			raise(0,2);
 		}
       }
     }
