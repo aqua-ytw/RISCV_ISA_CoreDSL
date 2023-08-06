@@ -492,23 +492,29 @@ InstructionSet XCoreVHwlp extends RV32I {
 	unsigned<32> &lpstart_1 = CSR[0xCC4];
     unsigned<32> &lpend_1   = CSR[0xCC5];
     unsigned<32> &lpcount_1 = CSR[0xCC6];
-	unsigned int HWLP_INSTR_ALIGNMENT = 2;
+	unsigned int HWLP_INSTR_ALIGNMENT = 4;
   }
   
 
   always {
     ZOL_0 {
-      if (PC == lpend_0 && lpcount_0 != 1) {
-        PC = lpstart_0;
-        lpcount_0 -= 1;
-      }
-    }
+		if (PC == lpend_0 && lpcount_0 != 1) {
+			if (lpend_0 - lpstart_0 < 8){
+				raise(0,2);
+			}
+			PC = lpstart_0;
+			lpcount_0 -= 1;
+		}
+	}
 	ZOL_1 {
-      if (PC == lpend_1 && lpcount_1 != 1) {
-        PC = lpstart_1;
-        lpcount_1 -= 1;
-      }
-    }
+        if (PC == lpend_1 && lpcount_1 != 1) {
+			if (lpend_1 - lpstart_1 < 8){
+				raise(0,2);
+			}	
+            PC = lpstart_1;
+            lpcount_1 -= 1;
+        }
+	}
   }
   
   instructions {
@@ -519,7 +525,7 @@ InstructionSet XCoreVHwlp extends RV32I {
 		
 		if (L == 0) {
 			if (lpstart_0 % HWLP_INSTR_ALIGNMENT) {
-				raise (0,0);
+				raise(0,0);
 			}
 			else {
 				lpstart_0 = (unsigned<32>) (PC + (uimmL << 2));
@@ -527,7 +533,7 @@ InstructionSet XCoreVHwlp extends RV32I {
 		}
 		else { 
 			if (lpstart_1 % HWLP_INSTR_ALIGNMENT) {
-				raise (0,0);
+				raise(0,0);
 			}
 			else {
 				lpstart_1 = (unsigned<32>) (PC + (uimmL << 2));
@@ -541,7 +547,7 @@ InstructionSet XCoreVHwlp extends RV32I {
 	  behavior: {
 		if (L == 0) {
 			if (lpstart_0 % HWLP_INSTR_ALIGNMENT) {
-				raise (0,0);
+				raise(0,0);
 			}
 			else {
         		lpstart_0 = X[rs1];
@@ -549,7 +555,7 @@ InstructionSet XCoreVHwlp extends RV32I {
 		}
 		else{
 			if (lpstart_1 % HWLP_INSTR_ALIGNMENT) {
-				raise (0,0);
+				raise(0,0);
 			}
 			else {
 				lpstart_1 = X[rs1];
@@ -585,7 +591,7 @@ InstructionSet XCoreVHwlp extends RV32I {
 	  behavior: {
 		if (L == 0) {
 			if (lpend_0 % HWLP_INSTR_ALIGNMENT){
-				raise (0,0);
+				raise(0,0);
 			}
 			else{
 				lpend_0 = X[rs1];
